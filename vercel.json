@@ -6,5 +6,9 @@
       "src": "fe/package.json",
       "use": "@vercel/next"
     }
+  ],
+  "routes": [
+    { "src": "/fe/(.*)", "dest": "/fe/$1" },
+    { "src": "/(.*)", "dest": "/fe/$1" }
   ]
 }
