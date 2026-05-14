@@ -1,44 +1,86 @@
 # SkillBridge
 
-A full-stack tutoring and freelance marketplace where students find tutors, hire freelancers, and let AI match them to the perfect expert.
+A full-stack tutoring and freelance marketplace where students find expert tutors, hire skilled freelancers, and let AI match them to the right person in seconds.
 
-**Live site:** (deploy URL here)
+**Live site:** https://fe-gamma-seven.vercel.app
 
 ---
 
 ## Features
 
-- **Browse Tutors** — Filter by subject, level, format, and rate
-- **Browse Services** — Hire freelancers for design, dev, writing, and more
-- **AI Match** — Answer 6 questions, get a personalized recommendation (Groq / Llama 3.3)
-- **Book & Review** — Request sessions or orders, leave star ratings
-- **Save Tutors** — Bookmark favourites to your profile
-- **Blog** — Study tips and career articles
-- **User Accounts** — Sign up as student, tutor, freelancer, or all three
-- **Admin Dashboard** — Manage users, listings, and blog posts
+| Feature | Description |
+|---------|-------------|
+| Browse Tutors | Search and filter by subject, level, format, and hourly rate |
+| Browse Services | Hire freelancers for design, development, writing, video, and more |
+| AI Match | Answer 6 questions — Groq Llama 3.3 recommends real tutors or services from the database |
+| Book & Review | Request sessions or orders, leave star ratings that update the average in real time |
+| Save Tutors | Bookmark favourites, persisted to your profile |
+| Blog | Study tips, career advice, and skill-building articles |
+| User Accounts | Sign up as student, tutor, freelancer, or all three |
+| Admin Dashboard | Manage users, listings, and blog posts |
+| Dark Mode | Toggle with sun/moon button — persists across sessions, respects system preference |
 
 ---
 
 ## Tech Stack
 
-### Frontend (`/fe`)
-| Tool | Purpose |
-|------|---------|
-| Next.js 13 (Pages Router) | Frontend framework |
-| TypeScript | Type safety |
-| Tailwind CSS | Styling |
-| Framer Motion | Animations |
-| Axios | API requests |
-| Groq SDK | AI match feature |
-| React Hot Toast | Notifications |
+| Layer | Tool | Purpose |
+|-------|------|---------|
+| Frontend | Next.js 13 (Pages Router) + TypeScript | Full-stack framework |
+| Styling | Tailwind CSS + Framer Motion | UI and animations |
+| Auth + DB | Supabase | Authentication, PostgreSQL database, Row Level Security |
+| AI | Groq SDK — Llama 3.3 70B | AI Match feature |
+| Deployment | Vercel | Frontend + serverless API routes |
 
-### Backend (`/be`)
-| Tool | Purpose |
-|------|---------|
-| Node.js + Express | REST API server |
-| MongoDB + Mongoose | Database |
-| JWT + bcrypt | Authentication |
-| Cloudinary + Multer | Image uploads |
+---
+
+## Architecture
+
+```
+Browser
+  │
+  ▼
+Next.js (Vercel)
+  ├── /pages          → React pages (SSR via getServerSideProps)
+  ├── /pages/api      → Serverless API routes (run on Vercel Edge)
+  │     ├── tutors/   → CRUD for tutor listings
+  │     ├── services/ → CRUD for service listings
+  │     ├── blogs/    → Blog posts
+  │     ├── bookings/ → Session/order requests
+  │     ├── reviews/  → Star reviews
+  │     ├── match.ts  → Groq AI recommendation endpoint
+  │     └── ...
+  └── /lib/supabase
+        ├── client.ts → Browser Supabase client (anon key)
+        └── server.ts → Server Supabase client (service role key, bypasses RLS)
+
+Supabase (PostgreSQL)
+  ├── auth.users      → Managed by Supabase Auth
+  ├── profiles        → Extended user data (auto-created on signup via trigger)
+  ├── tutors          → Tutor listings
+  ├── services        → Service listings
+  ├── bookings        → Session/order requests
+  ├── reviews         → Star ratings
+  ├── saved           → Bookmarked tutors
+  ├── blogs           → Blog posts
+  ├── categories      → Tutor subjects + freelance skills
+  └── blog_categories → Blog post categories
+```
+
+### Data flow (example: browse tutors page)
+
+1. User visits `/tutors`
+2. Client fetches `/api/tutors?level=beginner&maxRate=50`
+3. API route queries Supabase with the server client (service role, bypasses RLS)
+4. Results are transformed (`snake_case → camelCase`) and returned as JSON
+5. React renders `TutorCard` components with Framer Motion animations
+
+### Auth flow
+
+1. User signs up via Supabase Auth (`supabase.auth.signUp`)
+2. Database trigger `handle_new_user` auto-creates a `profiles` row
+3. Session is stored client-side by Supabase; `AuthContext` exposes `user` to all components
+4. Protected API routes verify the Bearer token via `getUserFromToken()`
 
 ---
 
@@ -46,35 +88,65 @@ A full-stack tutoring and freelance marketplace where students find tutors, hire
 
 ```
 skillbridge/
+├── supabase/
+│   └── schema.sql            # Full DB schema — run once in Supabase SQL Editor
+│
+├── seed.mjs                  # Demo data seeder (Node.js — run locally)
+│
 ├── .claude/
 │   └── commands/
-│       ├── skill-advisor.md     # /skill-advisor — domain expert skill
-│       └── generate-profiles.md # /generate-profiles — Ralph Wiggum loop
+│       ├── skill-advisor.md      # /skill-advisor — domain expert skill
+│       └── generate-profiles.md  # /generate-profiles — Ralph Wiggum loop
 │
-├── fe/                          # Next.js frontend
-│   ├── src/
-│   │   ├── pages/               # Routes
-│   │   │   ├── index.tsx        # Landing page
-│   │   │   ├── tutors/          # Browse + detail
-│   │   │   ├── services/        # Browse + detail
-│   │   │   ├── match.tsx        # AI matcher
-│   │   │   ├── blog/            # Blog list + detail
-│   │   │   ├── profile.tsx      # User profile + post listing
-│   │   │   ├── admin/           # Admin dashboard
-│   │   │   ├── auth/            # Login + signup
-│   │   │   └── api/match.ts     # Groq AI route
-│   │   ├── components/          # Reusable UI
-│   │   ├── context/             # Auth + Saved contexts
-│   │   └── utils/               # api.ts + types.ts
-│   └── .env.local               # Frontend env vars
-│
-└── be/                          # Express backend
-    ├── app.ts                   # Entry point
-    ├── models/                  # Mongoose schemas
-    ├── controller/              # Route handlers
-    ├── routes/                  # API routes
-    ├── middlewares/             # Auth, logger, upload
-    └── config/db.ts             # MongoDB connection
+└── fe/                       # Next.js app (deployed to Vercel)
+    ├── src/
+    │   ├── pages/
+    │   │   ├── index.tsx         # Homepage — SSR with live stats + featured listings
+    │   │   ├── tutors/
+    │   │   │   ├── index.tsx     # Tutor listing with filters
+    │   │   │   └── [id].tsx      # Tutor detail — book session + reviews
+    │   │   ├── services/
+    │   │   │   ├── index.tsx     # Service listing with filters
+    │   │   │   └── [id].tsx      # Service detail — place order + reviews
+    │   │   ├── blog/
+    │   │   │   ├── index.tsx     # Blog listing
+    │   │   │   └── [id].tsx      # Blog post detail
+    │   │   ├── match.tsx         # AI Match wizard
+    │   │   ├── profile.tsx       # User profile — edit, post listings, bookings
+    │   │   ├── admin/index.tsx   # Admin dashboard
+    │   │   ├── auth/
+    │   │   │   ├── login.tsx
+    │   │   │   └── signup.tsx
+    │   │   └── api/              # Serverless API routes
+    │   │       ├── tutors/
+    │   │       ├── services/
+    │   │       ├── blogs/
+    │   │       ├── bookings/
+    │   │       ├── reviews/
+    │   │       ├── categories/
+    │   │       ├── match.ts      # Groq AI endpoint
+    │   │       └── user/
+    │   ├── components/
+    │   │   ├── Layout.tsx
+    │   │   ├── Navbar.tsx        # Dark mode toggle
+    │   │   ├── Footer.tsx
+    │   │   ├── TutorCard.tsx
+    │   │   ├── ServiceCard.tsx
+    │   │   ├── BlogCard.tsx
+    │   │   └── StarRating.tsx
+    │   ├── context/
+    │   │   ├── AuthContext.tsx   # Supabase session + user profile
+    │   │   ├── ThemeContext.tsx  # Dark/light mode
+    │   │   └── SavedContext.tsx  # Saved tutors
+    │   ├── lib/
+    │   │   └── supabase/
+    │   │       ├── client.ts
+    │   │       └── server.ts
+    │   └── utils/
+    │       ├── types.ts          # TypeScript interfaces
+    │       ├── transform.ts      # Supabase row → typed object
+    │       └── api.ts            # Axios instance
+    └── .env.local.example
 ```
 
 ---
@@ -82,127 +154,189 @@ skillbridge/
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- MongoDB database (MongoDB Atlas — free)
-- Cloudinary account (free)
-- Groq API key (free at console.groq.com)
 
-### 1. Backend setup
+- Node.js 18+
+- A [Supabase](https://supabase.com) project (free tier is fine)
+- A [Groq](https://console.groq.com) API key (free)
+
+### 1. Clone and install
+
 ```bash
-cd be
+git clone <repo-url>
+cd skillbridge/fe
 npm install
-cp .env.example .env
-# Fill in your values in .env
-npm run dev
 ```
 
-### 2. Frontend setup
+### 2. Set up Supabase
+
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Go to **SQL Editor → New Query**, paste the contents of `supabase/schema.sql`, and run it
+3. Go to **Authentication → Providers → Email** and **disable "Confirm email"** (for development)
+
+### 3. Configure environment variables
+
+```bash
+cp .env.local.example .env.local
+```
+
+Fill in `fe/.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+GROQ_API_KEY=your_groq_api_key
+```
+
+Find the Supabase keys at **Project Settings → API**.
+
+### 4. Run the dev server
+
 ```bash
 cd fe
-npm install
-cp .env.local.example .env.local
-# Fill in your values in .env.local
 npm run dev
 ```
 
-Open http://localhost:3000
+Open [http://localhost:3000](http://localhost:3000)
+
+### 5. Seed demo data (optional)
+
+```bash
+# From the skillbridge/ root
+node seed.mjs
+```
+
+Seeds 9 profiles, 8 tutors, 7 services, and 8 blog posts.
 
 ---
 
-## API Documentation
+## API Reference
 
-Base URL: `http://localhost:4000`
-
-### Auth
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/user/signup` | Register — `{ name, email, password, role }` |
-| POST | `/user/signin` | Login — `{ email, password }` |
+All endpoints are Next.js serverless API routes at `/api/...`.
 
 ### Tutors
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/tutor` | List all (supports `?search=`, `?level=`, `?format=`, `?category=`, `?maxRate=`) |
-| GET | `/tutor/filter/:categoryId` | Filter by category |
-| GET | `/tutor/:id` | Get by ID |
-| POST | `/tutor` | Create (auth required) |
-| PUT | `/tutor/:id` | Update (auth required) |
-| DELETE | `/tutor/:id` | Delete (auth required) |
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/tutors` | — | List active tutors. Query params: `search`, `level`, `format`, `category`, `maxRate` |
+| GET | `/api/tutors/[id]` | — | Get tutor by ID (includes profile + category) |
+| POST | `/api/tutors` | Bearer | Create tutor listing |
+| PUT | `/api/tutors/[id]` | Bearer | Update listing |
+| DELETE | `/api/tutors/[id]` | Bearer | Delete listing |
 
 ### Services
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/service` | List all (supports `?search=`, `?category=`, `?maxPrice=`) |
-| GET | `/service/:id` | Get by ID |
-| POST | `/service` | Create (auth required) |
-| PUT | `/service/:id` | Update (auth required) |
-| DELETE | `/service/:id` | Delete (auth required) |
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/services` | — | List active services. Query params: `search`, `category`, `maxPrice` |
+| GET | `/api/services/[id]` | — | Get service by ID |
+| POST | `/api/services` | Bearer | Create service listing |
+| PUT | `/api/services/[id]` | Bearer | Update listing |
+| DELETE | `/api/services/[id]` | Bearer | Delete listing |
+
+### Blogs
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/blogs` | — | List all posts (newest first) |
+| GET | `/api/blogs/[id]` | — | Get post by ID |
+| POST | `/api/blogs` | Bearer | Create blog post |
 
 ### Bookings
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/booking` | Create booking (auth required) |
-| GET | `/booking/my` | My bookings (auth required) |
-| PATCH | `/booking/:id/status` | Update status |
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/bookings` | Bearer | Get current user's bookings |
+| POST | `/api/bookings` | Bearer | Create booking `{ listingId, listingType, message }` |
 
 ### Reviews
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/review` | Post a review (auth required) |
-| GET | `/review/:listingId?type=tutor\|service` | Get reviews for a listing |
 
-### Blog, Categories, Upload
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET/POST | `/blog` | List / create posts |
-| GET/POST | `/category` | List / create categories (`?type=subject\|skill`) |
-| GET/POST | `/blogCategory` | List / create blog categories |
-| POST | `/upload` | Upload image — multipart/form-data, field: `file` |
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/reviews/[listingId]?type=tutor\|service` | — | Get reviews for a listing |
+| POST | `/api/reviews` | Bearer | Submit review `{ listingId, listingType, rating, comment }` |
 
-### Frontend API Routes
+### Categories
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/match` | AI match — `{ need, goal, level, budget, format, urgency }` |
+| GET | `/api/categories?type=subject\|skill` | List categories |
+| GET | `/api/blogCategories` | List blog categories |
+
+### AI Match
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/match` | Send `{ need, goal, level, budget, format, urgency }` → returns `{ recommendation, bestType, traits, matchedListings }` |
 
 ---
 
 ## Claude Code Features
 
-### 1. Project Skill — `/skill-advisor`
-Custom skill in `.claude/commands/skill-advisor.md`. Invoke with `/skill-advisor` to get a domain expert that can generate tutor profiles, service listings, blog posts, and seed data.
+### 1. `/skill-advisor` — Domain Expert Skill
 
-### 2. Ralph Wiggum Loop — `/generate-profiles`
-Autonomous loop skill in `.claude/commands/generate-profiles.md`. Run with `/loop generate-profiles` to autonomously generate realistic tutor and service listings and POST them to the local API.
+A custom project skill in `.claude/commands/skill-advisor.md`. Invoke with `/skill-advisor` inside Claude Code to get an expert that understands the SkillBridge domain — tutoring, freelancing, subject areas — and can help generate listings, blog content, and seed data.
 
-### 3. AI Match Feature
-The `/match` page uses Groq Llama 3.3 70B to analyze 6 user answers and return a personalized recommendation (tutor vs service, what to look for, why).
+### 2. `/generate-profiles` — Ralph Wiggum Autonomous Loop
+
+An autonomous loop skill in `.claude/commands/generate-profiles.md`. Run with `/loop generate-profiles` to have Claude autonomously generate realistic tutor and service profiles and POST them directly to the API. Demonstrates the Ralph Wiggum technique from the course rubric.
+
+### 3. AI Match Feature (Groq + Llama 3.3 70B)
+
+The `/match` page is the primary AI feature. Users answer 6 questions about what they need, their goal, level, budget, format preference, and urgency. The `/api/match` route sends these to Groq's Llama 3.3 70B model which returns a personalized recommendation, 4 traits to look for, and keyword extraction. The API then queries the database for real matching tutors or services and returns them alongside the recommendation.
 
 ---
 
 ## Deployment
 
-### Frontend → Vercel
-1. Push to GitHub
-2. Import repo at vercel.com → set root to `fe`
-3. Add env vars: `NEXT_PUBLIC_API_URL`, `GROQ_API_KEY`
-4. Deploy
+The frontend + API are deployed as a single unit on Vercel.
 
-### Backend → Railway or Vercel
-- **Railway:** Set root to `be`, add env vars, deploy
-- **Vercel:** `vercel.json` is already configured — add env vars and deploy
+### Deploy to Vercel
+
+```bash
+npm install -g vercel
+cd fe
+vercel --prod
+```
+
+Set these environment variables in the Vercel dashboard or via CLI:
+
+```
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
+GROQ_API_KEY
+```
+
+### Supabase (backend)
+
+No separate backend deployment needed — Supabase is fully managed. The database, auth, and Row Level Security policies are defined in `supabase/schema.sql`.
 
 ---
 
-## Environment Variables
+## Database Schema
 
-| Variable | Location | Description |
-|----------|----------|-------------|
-| `NEXT_PUBLIC_API_URL` | `fe/.env.local` | Backend API URL |
-| `GROQ_API_KEY` | `fe/.env.local` | Groq API key for AI match |
-| `MONGO_URI` | `be/.env` | MongoDB connection string |
-| `JWT_SECRET` | `be/.env` | JWT signing secret |
-| `CLOUD_NAME` | `be/.env` | Cloudinary cloud name |
-| `API_KEY` | `be/.env` | Cloudinary API key |
-| `API_SECRET` | `be/.env` | Cloudinary API secret |
-| `PORT` | `be/.env` | Server port (default 4000) |
-| `ALLOWED_ORIGINS` | `be/.env` | CORS origins (comma-separated) |
+| Table | Description |
+|-------|-------------|
+| `profiles` | Extended user data — name, role, bio, avatar. Auto-created on signup via trigger. |
+| `tutors` | Tutor listings — subjects, level, rate, format, availability |
+| `services` | Freelance service listings — title, price, delivery time, tags |
+| `bookings` | Session/order requests between clients and listing owners |
+| `reviews` | Star ratings (1–5) with comment, linked to tutor or service |
+| `saved` | Many-to-many join of users and saved tutors |
+| `blogs` | Blog posts with author and category |
+| `categories` | Subjects (for tutors) and skills (for services) |
+| `blog_categories` | Blog post categories |
+
+Row Level Security is enabled on all tables. Users can only modify their own data. The service role key (used in API routes) bypasses RLS for admin operations.
+
+---
+
+## Environment Variables Reference
+
+| Variable | Where | Description |
+|----------|-------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | `fe/.env.local` | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `fe/.env.local` | Supabase anon/public key |
+| `SUPABASE_SERVICE_ROLE_KEY` | `fe/.env.local` | Supabase service role key (server-side only) |
+| `GROQ_API_KEY` | `fe/.env.local` | Groq API key for AI Match |

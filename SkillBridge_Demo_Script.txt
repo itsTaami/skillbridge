@@ -1,0 +1,452 @@
+================================================================
+  SKILLBRIDGE — LIVE DEMO SCRIPT
+  (Read the lines. Follow the directions in [brackets].)
+================================================================
+
+
+----------------------------------------------------------------
+  OPENING  (~ 1 minute)
+----------------------------------------------------------------
+
+[Stand in front of the screen. Browser is closed or on a blank tab.]
+
+SAY:
+  "So this is SkillBridge. It's a marketplace that connects
+   students with tutors and freelancers — think Fiverr meets
+   a tutoring platform. You can browse, book, leave reviews,
+   and there's an AI feature that recommends the right person
+   for you based on what you need."
+
+[Type the URL in the address bar: https://fe-gamma-seven.vercel.app]
+[Hit Enter. Wait for the page to load.]
+
+SAY:
+  "This is the live production site, deployed on Vercel.
+   Everything you see is pulling real data from a Supabase
+   database in real time."
+
+
+----------------------------------------------------------------
+  SCENE 1 — HOMEPAGE  (~ 1.5 minutes)
+----------------------------------------------------------------
+
+[The homepage loads. Scroll slowly so people can see the top.]
+
+SAY:
+  "The homepage is server-side rendered — so every time
+   someone visits, it fetches fresh data from the database
+   before the page even loads."
+
+[Point at the stats bar — the row showing numbers like "8 Tutors", "10 Subjects", etc.]
+
+SAY:
+  "These numbers are live. They count actual rows in the
+   database right now — tutors, subjects, bookings, students."
+
+[Scroll down slowly past the hero section.]
+
+SAY:
+  "And these are featured tutors and services — also pulled
+   live, not hardcoded."
+
+[Keep scrolling to show the tutor cards and service cards.]
+
+SAY:
+  "Each card is animated with Framer Motion. Small detail
+   but it makes the UI feel polished."
+
+[Scroll down to the 'How it Works' section if visible, then stop.]
+
+
+----------------------------------------------------------------
+  SCENE 2 — DARK MODE  (~ 30 seconds)
+----------------------------------------------------------------
+
+[Look at the top-right corner of the navbar. Find the sun/moon icon.]
+
+SAY:
+  "Quick one — dark mode."
+
+[Click the sun/moon toggle icon.]
+
+[The whole page instantly switches to dark.]
+
+SAY:
+  "Every single page supports dark mode. It respects your
+   system preference on first visit, and it remembers your
+   choice across sessions using localStorage."
+
+[Click it again to go back to light, or leave it dark — your choice.]
+
+
+----------------------------------------------------------------
+  SCENE 3 — BROWSE TUTORS  (~ 2 minutes)
+----------------------------------------------------------------
+
+[Click "Tutors" in the navbar.]
+
+SAY:
+  "So this is the tutors page. All the active tutors on the
+   platform, with filters on the side."
+
+[The tutor listing loads with cards on the right and filters on the left.]
+
+SAY:
+  "I can filter by keyword, level, format — online or
+   in-person — category, and max hourly rate."
+
+[Click the search box on the left. Type "Python".]
+
+SAY:
+  "Let's say I want a Python tutor."
+
+[The results filter to show only Python-related tutors.]
+
+SAY:
+  "Now let me also filter by level."
+
+[Click "Beginner" in the level filter.]
+
+[Results update again.]
+
+SAY:
+  "Results update instantly. No page reload."
+
+[Click on one of the tutor cards — preferably Priya Sharma, the data science tutor.]
+
+SAY:
+  "Let me open this one."
+
+[The tutor detail page loads.]
+
+SAY:
+  "Each tutor has a full profile — their subjects, level,
+   format, availability, hourly rate, and a description they
+   wrote themselves."
+
+[Scroll down slowly.]
+
+SAY:
+  "And here are the reviews. Star ratings, comments, all
+   stored in the database and averaged in real time."
+
+[Scroll a bit more to show the booking form and review form.]
+
+SAY:
+  "If you're logged in, you can book a session by sending
+   a message request, or leave a review after your session."
+
+
+----------------------------------------------------------------
+  SCENE 4 — BROWSE SERVICES  (~ 1.5 minutes)
+----------------------------------------------------------------
+
+[Click "Services" in the navbar.]
+
+SAY:
+  "Same idea for services — but this is the freelance side.
+   Designers, developers, writers, video editors."
+
+[The service listing loads.]
+
+[Click the "Graphic Design" category filter on the left.]
+
+SAY:
+  "Let's filter by Graphic Design."
+
+[Results update to show only design services.]
+
+SAY:
+  "Each card shows the title, freelancer, price, delivery
+   time, tags, and rating."
+
+[Click on a service card — the logo design one.]
+
+SAY:
+  "The service detail page works the same as tutors —
+   description, price, tags, reviews, and an order form."
+
+[Scroll down briefly to show the reviews and order section.]
+
+
+----------------------------------------------------------------
+  SCENE 5 — AI MATCH  (~ 3 minutes)
+  ** THIS IS THE MAIN FEATURE — TAKE YOUR TIME HERE **
+----------------------------------------------------------------
+
+[Click "AI Match" in the navbar.]
+
+SAY:
+  "Okay, this is the feature I'm most proud of. AI Match."
+
+[The AI Match wizard page loads. There's a progress bar and the first question.]
+
+SAY:
+  "The idea is simple — instead of browsing and guessing,
+   you answer 6 quick questions and the AI tells you exactly
+   what kind of help you need and shows you real people
+   who match."
+
+[Point at the progress bar at the top.]
+
+SAY:
+  "Six steps. Let's go through them."
+
+--- QUESTION 1 ---
+
+[The first question says: "What do you need help with?"]
+[Click the text box. Type:]
+
+  "I want to learn Python for data science and build a
+   machine learning project"
+
+SAY:
+  "I'll use a realistic scenario — a student who wants to
+   learn Python."
+
+[Click "Next →"]
+
+--- QUESTION 2 ---
+
+[Question: "What's your main goal?"]
+[Type:]
+
+  "Build a machine learning portfolio project to get an internship"
+
+[Click "Next →"]
+
+--- QUESTION 3 ---
+
+[Question: "What's your current level?" — multiple choice buttons appear]
+
+SAY:
+  "Multiple choice now."
+
+[Click "Some experience"]
+
+[Click "Next →"]
+
+--- QUESTION 4 ---
+
+[Question: "What's your budget?"]
+[Click "$20 – $50"]
+
+[Click "Next →"]
+
+--- QUESTION 5 ---
+
+[Question: "Preferred format?"]
+[Click "Online sessions"]
+
+[Click "Next →"]
+
+--- QUESTION 6 ---
+
+[Question: "How urgent is this?"]
+[Click "Within a month"]
+
+SAY:
+  "Last one."
+
+[Click "Find My Match →"]
+
+[A loading state shows — "Analyzing..."]
+
+SAY:
+  "This is now calling Groq's API — Llama 3.3 70B — a large
+   language model. It reads all six answers, figures out
+   whether the user needs a tutor or a freelancer, writes a
+   personalized recommendation, and extracts keywords from
+   the answers to search the actual database."
+
+[The result page loads after a couple of seconds.]
+
+SAY:
+  "And here we go."
+
+[Point at the recommendation paragraph.]
+
+SAY:
+  "This paragraph is written by the AI, specifically for
+   this user's answers. It's not a template — it's generated
+   fresh every time."
+
+[Scroll down to the "What to look for" section.]
+
+SAY:
+  "These four traits — also from the AI. Specific things
+   to look for when picking a tutor for this exact goal."
+
+[Scroll down to the matched tutor cards.]
+
+SAY:
+  "And these — these are real tutors from the database.
+   The AI extracted 'Python' and 'data science' from the
+   answers, searched the tutors table, and returned the
+   best matches by rating."
+
+[Click on one of the tutor cards.]
+
+SAY:
+  "And it links directly to the real profile. You can book
+   right from here."
+
+[Go back using the browser back button.]
+
+
+----------------------------------------------------------------
+  SCENE 6 — USER ACCOUNT  (~ 1.5 minutes)
+----------------------------------------------------------------
+
+[Click "Sign In" or your profile icon in the navbar.]
+[If not logged in, log in with your demo account.]
+
+SAY:
+  "Users sign up as a student, tutor, freelancer, or all
+   three. When you sign up, a database trigger automatically
+   creates your profile — you don't have to do anything extra."
+
+[Navigate to /profile]
+
+SAY:
+  "This is the profile page."
+
+[Show the tabs at the top — "My Bookings", "My Listings", "Saved Tutors", "Edit Profile".]
+
+[Click "My Bookings".]
+
+SAY:
+  "Any session or order requests you've sent show up here."
+
+[Click "Saved Tutors".]
+
+SAY:
+  "And saved tutors — let me show you how that works."
+
+[Go to /tutors. Find a tutor card. Click the heart icon on it.]
+
+SAY:
+  "I click the heart to save a tutor."
+
+[Go back to /profile and click "Saved Tutors".]
+
+SAY:
+  "It's saved to my profile instantly. Persisted to the
+   database, not just browser memory."
+
+
+----------------------------------------------------------------
+  SCENE 7 — BLOG  (~ 30 seconds)
+----------------------------------------------------------------
+
+[Click "Blog" in the navbar.]
+
+SAY:
+  "There's also a blog — study tips, freelancing advice,
+   tech tutorials. Posts are stored in the database with
+   author and category. Quick one."
+
+[Click on one blog post to show the detail page.]
+
+SAY:
+  "Full article page. Authors are linked to real profiles."
+
+[Click back.]
+
+
+----------------------------------------------------------------
+  SCENE 8 — ARCHITECTURE  (~ 1.5 minutes)
+----------------------------------------------------------------
+
+[Stay on any page. You're just talking now — no clicking needed.]
+
+SAY:
+  "Quick architecture overview for the technical side."
+
+SAY:
+  "The whole app is Next.js 13 with the Pages Router.
+   Pages are server-side rendered — getServerSideProps runs
+   on the server, fetches data from Supabase before the HTML
+   is sent to the browser."
+
+SAY:
+  "The API routes are serverless functions deployed on Vercel.
+   They use a service role key to talk to Supabase — that key
+   never touches the browser."
+
+SAY:
+  "Auth is Supabase Auth. When you sign up, a PostgreSQL
+   trigger fires automatically and creates your profile row.
+   Row Level Security is enabled — users can only read and
+   write their own data."
+
+SAY:
+  "The AI Match feature calls Groq from a serverless route.
+   The API key stays server-side. The model returns structured
+   JSON — recommendation, traits, keywords — and then we use
+   those keywords to query the real database."
+
+
+----------------------------------------------------------------
+  SCENE 9 — CLAUDE CODE / AI COLLABORATION  (~ 1.5 minutes)
+----------------------------------------------------------------
+
+SAY:
+  "For the AI collaboration part of the rubric — I used
+   Claude Code throughout this project."
+
+SAY:
+  "First, there's a custom slash command called /skill-advisor.
+   It's a project-specific skill — when I run it in Claude Code,
+   it acts as a domain expert that understands SkillBridge:
+   tutoring, freelancing, the database schema. I used it to
+   generate listings, blog content, and seed data."
+
+SAY:
+  "Second, there's a /generate-profiles command that uses the
+   Ralph Wiggum autonomous loop technique — Claude runs in a
+   loop, autonomously generating realistic tutor and service
+   profiles and POSTing them directly to the live API, without
+   any human input between iterations."
+
+SAY:
+  "And the third AI feature is the one you already saw —
+   AI Match built into the product itself. That's Groq's
+   Llama 3.3 70B returning structured JSON and searching
+   the real database."
+
+SAY:
+  "So AI was used both as a development tool during
+   building, and as a product feature in the final app."
+
+
+----------------------------------------------------------------
+  CLOSING  (~ 30 seconds)
+----------------------------------------------------------------
+
+SAY:
+  "So to summarize — SkillBridge is a full-stack marketplace
+   with real authentication, a relational database, server-side
+   rendering, an AI recommendation engine, and it's live in
+   production right now."
+
+[Point at the URL bar showing the vercel.app domain.]
+
+SAY:
+  "That's the demo. Happy to take questions."
+
+
+================================================================
+  END OF SCRIPT
+================================================================
+
+TIPS:
+  - Open the live site BEFORE you start. Have it ready.
+  - Log in before the demo so you don't waste time signing in.
+  - For the AI Match, type the answers fast — the AI response
+    takes about 3-5 seconds and that pause is fine, use it
+    to explain what's happening behind the scenes.
+  - If something fails, just say "live demo, things happen"
+    and move on. The code is solid.
+  - Total time: ~12-13 minutes at a normal pace.
+================================================================
