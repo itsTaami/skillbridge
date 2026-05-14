@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "alias": ["skillbridgeme.vercel.app"],
   "builds": [
     {
       "src": "fe/package.json",
